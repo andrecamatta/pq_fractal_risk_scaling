@@ -227,7 +227,7 @@ function compare_scalings(r::Vector{Float64}, horizons::Vector{Int}, q::Float64,
         throw(ArgumentError("Nenhuma comparação pôde ser realizada"))
     end
     
-    @info "Comparação de escalas: $(nrow(results)) horizontes"
+    @debug "Comparação de escalas: $(nrow(results)) horizontes"
     return results
 end
 

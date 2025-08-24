@@ -109,7 +109,7 @@ function to_returns(df::DataFrame; method::String="log", price_col::String="pric
         returns = returns
     )
     
-    @info "Retornos $(method) calculados: $(nrow(df_returns)) observações"
+    @debug "Retornos $(method) calculados: $(nrow(df_returns)) observações"
     return df_returns
 end
 
@@ -218,7 +218,7 @@ function aggregate_horizon(df::DataFrame, h::Int; overlap::Bool=false,
     result[!, Symbol(timestamp_col)] = ts_agg
     result[!, Symbol(return_col)] = r_agg
     
-    @info "Agregação h=$h concluída: $(nrow(result)) observações (overlap=$overlap)"
+    @debug "Agregação h=$h concluída: $(nrow(result)) observações (overlap=$overlap)"
     return result
 end
 

@@ -102,7 +102,7 @@ function fetch_prices_daily(ticker::String, start::Union{String,Date}, end_date:
         sort!(df, :timestamp)
         unique!(df, :timestamp)
         
-        @info "Dados diários baixados: $(nrow(df)) observações para $ticker ($(start_date) a $(end_date_parsed))"
+        @debug "Dados diários baixados: $(nrow(df)) observações para $ticker ($(start_date) a $(end_date_parsed))"
         return df
         
     catch e
@@ -178,7 +178,7 @@ function fetch_prices_intraday(ticker::String; period::String="60d", interval::S
         # Forward fill lacunas curtas (≤ 1 intervalo)
         _forward_fill_short_gaps!(df, interval)
         
-        @info "Dados intradiários baixados: $(nrow(df)) observações para $ticker ($interval, $period)"
+        @debug "Dados intradiários baixados: $(nrow(df)) observações para $ticker ($interval, $period)"
         return df
         
     catch e
@@ -293,27 +293,6 @@ function _fetch_intraday_chunked(ticker::String, start_date::Date, end_date::Dat
     end
 end
 
-function _forward_fill_short_gaps!(df::DataFrame, interval::String)
-    if nrow(df) < 2
-        return
-    end
-    
-    interval_minutes = _interval_to_minutes(interval)
-    expected_gap = Minute(interval_minutes)
-    
-    # Identificar lacunas curtas (até 1 intervalo) e forward fill
-    for i in 2:nrow(df)
-        actual_gap = df.timestamp[i] - df.timestamp[i-1]
-        
-        # Se a lacuna for menor que 1.5x o intervalo esperado, é aceitável
-        if actual_gap <= expected_gap * 1.5
-            continue
-        elseif actual_gap <= expected_gap * 2
-            # Lacuna pequena que poderia ser preenchida, mas mantendo simples por ora
-            @debug "Lacuna pequena detectada: $(actual_gap) entre $(df.timestamp[i-1]) e $(df.timestamp[i])"
-        end
-    end
-end
 
 function _interval_to_minutes(interval::String)
     if endswith(interval, "m")

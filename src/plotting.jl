@@ -4,6 +4,8 @@ Implementa os 5 gráficos especificados na documentação.
 """
 
 using Printf
+using Plots
+using Plots: mm
 
 """
     plot_var_vs_horizon(curve_df::DataFrame, alpha_fit::Dict, VaR1::Float64; 
@@ -46,9 +48,9 @@ function plot_var_vs_horizon(curve_df::DataFrame, alpha_fit::Dict, VaR1::Float64
     var_alpha_upper = [theoretical_var_power(VaR1, h, alpha_ci[2]) for h in h_smooth]
     
     # Criar gráfico em escala log-log
-    p = plot(log.(h_emp), log.(var_emp), 
+    p = plot(log.(h_emp), log.(var_emp),
              seriestype=:scatter,
-             size=(1000, 600), 
+             size=(1000, 600),
              label="VaR Empírico",
              markersize=4,
              markercolor=:blue,
@@ -60,7 +62,11 @@ function plot_var_vs_horizon(curve_df::DataFrame, alpha_fit::Dict, VaR1::Float64
              grid=true,
              gridwidth=1,
              gridcolor=:gray,
-             gridalpha=0.3)
+             gridalpha=0.3,
+             bottom_margin=5mm,
+             left_margin=5mm,
+             right_margin=5mm,
+             top_margin=5mm)
     
     # Curva √h
     plot!(p, log.(h_smooth), log.(var_sqrt),
@@ -87,8 +93,13 @@ function plot_var_vs_horizon(curve_df::DataFrame, alpha_fit::Dict, VaR1::Float64
     r2_text = "R² = $(round(alpha_fit["r2"], digits=3))"
     alpha_text = "α = $(round(alpha_est, digits=3)) ± $(round(alpha_fit["alpha_se"], digits=3))"
     
-    annotate!(p, [(log(maximum(h_emp))*0.7, log(maximum(var_emp))*0.9, text(r2_text, 10)),
-                  (log(maximum(h_emp))*0.7, log(maximum(var_emp))*0.85, text(alpha_text, 10))])
+    # Posicionar anotações no canto superior esquerdo
+    x_pos = log(minimum(h_emp)) + 0.1 * (log(maximum(h_emp)) - log(minimum(h_emp)))
+    y_pos_r2 = log(maximum(var_emp)) - 0.1 * (log(maximum(var_emp)) - log(minimum(var_emp)))
+    y_pos_alpha = log(maximum(var_emp)) - 0.15 * (log(maximum(var_emp)) - log(minimum(var_emp)))
+    
+    annotate!(p, [(x_pos, y_pos_r2, text(r2_text, 11, :left)),
+                  (x_pos, y_pos_alpha, text(alpha_text, 11, :left))])
     
     # Salvar
     savefig(p, output_path)
@@ -127,7 +138,11 @@ function plot_violations_by_horizon(comparison_df::DataFrame;
              title=title,
              legend=:topright,
              grid=true,
-             size=(1000, 600))
+             size=(1000, 600),
+             bottom_margin=5mm,
+             left_margin=5mm,
+             right_margin=5mm,
+             top_margin=5mm)
     
     # Taxa alvo
     hline!(p, [target_rate], 
@@ -217,7 +232,11 @@ function plot_loglog_regression(curve_df::DataFrame, alpha_fit::Dict;
              title=title,
              legend=:bottomright,
              grid=true,
-             size=(1000, 600))
+             size=(1000, 600),
+             bottom_margin=5mm,
+             left_margin=5mm,
+             right_margin=5mm,
+             top_margin=5mm)
     
     # Linha de regressão
     plot!(p, log_h_smooth, log_var_pred,
@@ -230,14 +249,14 @@ function plot_loglog_regression(curve_df::DataFrame, alpha_fit::Dict;
     r2_text = @sprintf("R² = %.3f", alpha_fit["r2"])
     n_text = @sprintf("N = %d", alpha_fit["npoints"])
     
-    # Posicionar textos
+    # Posicionar textos no canto superior esquerdo
     x_pos = minimum(log_h) + 0.1 * (maximum(log_h) - minimum(log_h))
     y_max = maximum(log_var)
     y_range = maximum(log_var) - minimum(log_var)
     
-    annotate!(p, [(x_pos, y_max - 0.05*y_range, text(alpha_text, 11, :left)),
-                  (x_pos, y_max - 0.10*y_range, text(r2_text, 11, :left)),
-                  (x_pos, y_max - 0.15*y_range, text(n_text, 11, :left))])
+    annotate!(p, [(x_pos, y_max - 0.1*y_range, text(alpha_text, 11, :left)),
+                  (x_pos, y_max - 0.15*y_range, text(r2_text, 11, :left)),
+                  (x_pos, y_max - 0.2*y_range, text(n_text, 11, :left))])
     
     savefig(p, output_path)
     @info "Gráfico 3 salvo: $output_path"
@@ -287,7 +306,11 @@ function plot_rolling_alpha(rolling_df::DataFrame;
              title=title,
              legend=:topright,
              grid=true,
-             size=(1000, 600))
+             size=(1000, 600),
+             bottom_margin=5mm,
+             left_margin=5mm,
+             right_margin=5mm,
+             top_margin=5mm)
     
     # Bandas de confiança paramétricas
     plot!(p, x_vals, rolling_df.alpha_ci_lower_param,
@@ -371,7 +394,11 @@ function plot_scaling_comparison(curve_df::DataFrame, comparison_df::DataFrame, 
              title=title,
              size=(1000, 600),
              legend=:topleft,
-             grid=true)
+             grid=true,
+             bottom_margin=5mm,
+             left_margin=5mm,
+             right_margin=5mm,
+             top_margin=5mm)
     
     # Curva √h
     plot!(p, h_smooth, var_sqrt_smooth,
