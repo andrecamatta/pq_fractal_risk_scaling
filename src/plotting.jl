@@ -47,7 +47,8 @@ function plot_var_vs_horizon(curve_df::DataFrame, alpha_fit::Dict, VaR1::Float64
     
     # Criar gráfico em escala log-log
     p = plot(log.(h_emp), log.(var_emp), 
-             seriestype=:scatter, 
+             seriestype=:scatter,
+             size=(1000, 600), 
              label="VaR Empírico",
              markersize=4,
              markercolor=:blue,
@@ -125,7 +126,8 @@ function plot_violations_by_horizon(comparison_df::DataFrame;
              ylabel="Taxa de Violações",
              title=title,
              legend=:topright,
-             grid=true)
+             grid=true,
+             size=(1000, 600))
     
     # Taxa alvo
     hline!(p, [target_rate], 
@@ -214,7 +216,8 @@ function plot_loglog_regression(curve_df::DataFrame, alpha_fit::Dict;
              ylabel="log(VaR)",
              title=title,
              legend=:bottomright,
-             grid=true)
+             grid=true,
+             size=(1000, 600))
     
     # Linha de regressão
     plot!(p, log_h_smooth, log_var_pred,
@@ -283,7 +286,8 @@ function plot_rolling_alpha(rolling_df::DataFrame;
              ylabel="α",
              title=title,
              legend=:topright,
-             grid=true)
+             grid=true,
+             size=(1000, 600))
     
     # Bandas de confiança paramétricas
     plot!(p, x_vals, rolling_df.alpha_ci_lower_param,
@@ -365,6 +369,7 @@ function plot_scaling_comparison(curve_df::DataFrame, comparison_df::DataFrame, 
              xlabel="Horizonte (h)",
              ylabel="VaR",
              title=title,
+             size=(1000, 600),
              legend=:topleft,
              grid=true)
     

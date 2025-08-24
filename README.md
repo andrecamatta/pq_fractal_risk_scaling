@@ -24,6 +24,7 @@ Um pacote Julia para análise de **escala fractal de risco** em ativos financeir
 - **[GRÁFICO 3]**: `loglog_regression.png` - Regressão log-log com estatísticas
 - **[GRÁFICO 4]**: `rolling_alpha.png` - α temporal (rolling) com bandas bootstrap
 - **[GRÁFICO 5]**: `scaling_comparison.png` - Comparação VaR empírico vs teórico
+- *Todos os gráficos são gerados em alta resolução (1000×600 pixels)*
 - **[TABELA 1]**: `coverage_backtest.txt` - Cobertura empírica + testes Kupiec
 - **[TABELA 2]**: `fractal_parameters.txt` - Comparação √h vs h^α* por horizonte
 - **[RELATÓRIO]**: `summary_report.txt` - Interpretação completa dos resultados
@@ -32,7 +33,7 @@ Um pacote Julia para análise de **escala fractal de risco** em ativos financeir
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/usuario/FractalRiskScaling.jl")
+Pkg.add(url="https://github.com/andrecamatta/pq_fractal_risk_scaling")
 ```
 
 Ou localmente:
@@ -46,6 +47,30 @@ Pkg.instantiate()
 ### 🎯 Interface Única: `analyze_fractal_risk()`
 
 O pacote oferece uma **interface única** que substitui workflows complexos:
+
+#### Via Linha de Comando
+
+```bash
+# Análise simples (5 anos padrão)
+julia run_analysis.jl PETR4.SA
+
+# Análise dos últimos 2 anos
+julia run_analysis.jl PETR4.SA --years=2
+
+# Análise rápida (menos horizontes)
+julia run_analysis.jl PETR4.SA --simple
+
+# VaR 95% ao invés de 99%
+julia run_analysis.jl PETR4.SA --var-level=0.95
+
+# Saída mínima (apenas α)
+julia run_analysis.jl PETR4.SA --quiet
+
+# Combinações
+julia run_analysis.jl ^BVSP --years=3 --simple --var-level=0.95
+```
+
+#### Via Julia REPL
 
 ```julia
 using FractalRiskScaling
@@ -237,8 +262,28 @@ results = Dict(
 )
 ```
 
+## 🚀 Exemplos de Uso Rápido
+
+### Linha de Comando
+
+```bash
+# Análise básica do Ibovespa
+julia run_analysis.jl ^BVSP --years=2
+
+# Ação com VaR 95%
+julia run_analysis.jl VALE3.SA --var-level=0.95
+
+# Análise rápida para teste
+julia run_analysis.jl ITUB4.SA --simple --quiet
+```
+
 ## 🧪 Testes
 
+```bash
+julia --project=. -e "using Pkg; Pkg.test()"
+```
+
+Ou via Julia:
 ```julia
 using Pkg
 Pkg.test("FractalRiskScaling")
@@ -305,7 +350,7 @@ Distribuído sob licença MIT. Veja `LICENSE` para mais informações.
 
 ## 👨‍💻 Autor
 
-Andre Camatta - [GitHub](https://github.com/usuario)
+Andre Camatta - [GitHub](https://github.com/andrecamatta)
 
 ## 🙏 Agradecimentos
 
